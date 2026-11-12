@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
     :root {
       --primary: #0284c7;
@@ -46,9 +47,11 @@
       display: inline-block; width: 100%; padding: 12px 16px; border: none; border-radius: 8px;
       font-size: 1rem; font-weight: 700; cursor: pointer; text-align: center; transition: 0.2s;
     }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-accent { background: var(--accent); color: white; }
+    .btn-pay { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; font-size: 1.05rem; }
     .btn-outline { background: white; border: 2px solid var(--primary); color: var(--primary); }
     .btn-warn { background: #f59e0b; color: white; }
     .btn-sm { padding: 8px 12px; font-size: 0.85rem; width: auto; }
@@ -116,11 +119,14 @@
     .stat-cell { background: white; padding: 10px 6px; border-radius: 8px; font-size: 0.85rem; }
     .review-q { border-bottom: 1px solid var(--border); padding: 14px 0; }
     .review-q:last-child { border-bottom: none; }
-    .admin-control {
-      background: #fffbeb; border: 1px dashed #f59e0b; padding: 12px; border-radius: 8px;
-      margin-top: 16px; font-size: 0.85rem;
-    }
     .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+
+    /* Admin Table */
+    .admin-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px; border: 1px solid var(--border); border-radius: 8px;
+      margin-bottom: 10px; background: #f8fafc; gap: 10px; flex-wrap: wrap;
+    }
 
     @media (max-width: 480px) {
       .q-palette { grid-template-columns: repeat(8, 1fr); }
@@ -129,7 +135,7 @@
 
     @media print {
       body { background: white; padding: 0; }
-      header, .no-print, .admin-control, .user-bar, .filter-bar { display: none !important; }
+      header, .no-print, .user-bar, .filter-bar { display: none !important; }
       .container { max-width: 100%; margin: 0; padding: 0; }
       .card { box-shadow: none; border: none; padding: 0; }
     }
@@ -148,7 +154,7 @@
   <div id="loginSection" class="card">
     <h2>📱 విద్యార్థి లాగిన్ (Student Login)</h2>
     <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 14px;">
-      పరీక్ష రాయడానికి మీ పేరు, 10-అంకెల మొబైల్ నంబర్ మరియు 4-అంకెల PIN ఎంటర్ చేయండి.
+      పరీక్ష రాయడానికి లేదా మీ పాత ఫలితాలు/PDF చూడటానికి మీ పేరు, 10-అంకెల మొబైల్ నంబర్ మరియు 4-అంకెల PIN ఎంటర్ చేయండి.
     </p>
     <label>విద్యార్థి పేరు (Student Name)</label>
     <input type="text" id="studentName" placeholder="మీ పూర్తి పేరు">
@@ -156,10 +162,10 @@
     <label>మొబైల్ నంబర్ (10 అంకెలు)</label>
     <input type="tel" id="mobileInput" maxlength="10" placeholder="ఉదా: 9876543210">
 
-    <label>4-అంకెల PIN (సెట్ చేసుకోండి / ఎంటర్ చేయండి)</label>
+    <label>4-అంకెల PIN (కొత్తవారైతే 4 అంకెలు సెట్ చేసుకోండి)</label>
     <input type="password" id="pinInput" maxlength="4" placeholder="ఉదా: 1234">
 
-    <button class="btn btn-primary" onclick="loginStudent()">లాగిన్ / పరీక్ష పోర్టల్‌లోకి వెళ్ళండి →</button>
+    <button class="btn btn-primary" id="loginBtn" onclick="loginStudent()">లాగిన్ / పరీక్ష పోర్టల్‌లోకి వెళ్ళండి →</button>
   </div>
 
   <!-- 2. DASHBOARD SCREEN -->
@@ -172,31 +178,20 @@
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
         <span class="badge badge-blue">PAPER CODE A (09-04-2023)</span>
-        <span id="reattemptStatusBadge" class="badge badge-green">Re-attempt: అనుమతి ఉంది</span>
+        <span id="accessStatusBadge" class="badge badge-red">Locked</span>
       </div>
       <h2>TSLPRB SI / ASI ఫైనల్ రాత పరీక్ష - జనరల్ స్టడీస్ (200 మార్కులు)</h2>
       <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 14px;">
         • మొత్తం ప్రశ్నలు: <strong>200</strong> (తెలుగు & ఇంగ్లీష్ మీడియం)<br>
         • పరీక్ష సమయం: <strong>180 నిమిషాలు (3 గంటలు)</strong><br>
-        • మార్కులు: ప్రతి సరైన సమాధానానికి 1 మార్కు (నెగటివ్ మార్కులు లేవు)
+        • పరీక్ష ఫీజు: <strong>కేవలం ₹5 మాత్రమే</strong> (పరీక్ష పూర్తయ్యాక 200 ప్రశ్నల PDF కీ ఉచితం)
       </p>
 
-      <div id="actionButtonsArea">
-        <button class="btn btn-accent" onclick="startExam()">✍️ పూర్తి పరీక్ష ప్రారంభించండి (Start 200Q Test)</button>
-      </div>
+      <div id="actionButtonsArea"></div>
 
       <div id="historySection" class="hidden" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
         <h3 style="font-size: 1rem; margin-bottom: 10px;">📋 మీరు రాసిన పరీక్షల వివరాలు (Attempt History)</h3>
         <div id="historyList"></div>
-      </div>
-
-      <div class="admin-control hidden">
-        <strong>⚙️ అడ్మిన్ కంట్రోల్ (Re-attempt Permission):</strong><br>
-        విద్యార్థికి మళ్ళీ పరీక్ష రాసే అనుమతి ఇవ్వాలా వద్దా ఇక్కడ మార్చవచ్చు:
-        <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn btn-sm btn-accent" onclick="toggleReattempt(true)">✅ Re-attempt అనుమతించు</button>
-          <button class="btn btn-sm" style="background:#dc2626; color:white;" onclick="toggleReattempt(false)">🔒 Re-attempt ఆపివేయి</button>
-        </div>
       </div>
     </div>
   </div>
@@ -268,6 +263,26 @@
     </div>
   </div>
 
+  <!-- 5. HIDDEN ADMIN PANEL (Accessible ONLY via ?admin=1) -->
+  <div id="adminSection" class="card hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h2>🔐 అడ్మిన్ డ్యాష్‌బోర్డ్ (Admin Control)</h2>
+      <a href="?" class="btn btn-outline btn-sm" style="text-decoration:none;">← విద్యార్థి పేజీ</a>
+    </div>
+    <div id="adminAuthBox">
+      <label>Admin Secret Key ఎంటర్ చేయండి:</label>
+      <input type="password" id="adminKeyInput" placeholder="మీ ADMIN_KEY పాస్‌వర్డ్">
+      <button class="btn btn-primary" onclick="loadAdminData()">విద్యార్థుల వివరాలు లోడ్ చేయండి</button>
+    </div>
+    <div id="adminDataBox" class="hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <strong>మొత్తం విద్యార్థులు: <span id="totalStudentsCount">0</span></strong>
+        <button class="btn btn-outline btn-sm" onclick="loadAdminData()">🔄 Refresh</button>
+      </div>
+      <div id="adminStudentsList"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Load Question Parts -->
@@ -275,10 +290,15 @@
 <script src="part2.js"></script>
 
 <script>
+  const API_BASE = "https://tssi-test-api.smartstudyhub.workers.dev";
+  const RAZORPAY_KEY = "rzp_live_T18sE5oDk1k8ey";
+  const TEST_ID = "TS_SI_MAINS_GS_2023";
+  const TEST_PRICE_INR = 5;
+
   const questions = [...(window.questionsPart1 || []), ...(window.questionsPart2 || [])];
 
   let currentUser = null;
-  let allowReattempt = true;
+  let userState = { hasAccess: false, allowReattempt: false, attempts: [] };
   let currentQIndex = 0;
   let currentSection = 0;
   let userAnswers = [];
@@ -288,46 +308,87 @@
   let activeRecord = null;
 
   window.onload = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('admin') === '1') {
+      hideAllSections();
+      document.getElementById('adminSection').classList.remove('hidden');
+      const savedKey = sessionStorage.getItem('tssi_admin_key');
+      if (savedKey) {
+        document.getElementById('adminKeyInput').value = savedKey;
+        loadAdminData();
+      }
+      return;
+    }
+
     if (questions.length === 0) {
-      alert("గమనిక: part1.js మరియు part2.js ఫైల్స్ లోడ్ కాలేదు. దయచేసి అవి index.html ఉన్న ఫోల్డర్‌లోనే ఉన్నాయో లేదో చూడండి.");
+      alert("గమనిక: part1.js మరియు part2.js ఫైల్స్ లోడ్ కాలేదు.");
     }
     document.getElementById('qTotalNum').innerText = questions.length;
     document.getElementById('resTotal').innerText = questions.length;
 
-    const savedUser = localStorage.getItem('tssi_mock_user');
+    const savedUser = localStorage.getItem('tssi_d1_user');
     if (savedUser) {
-      currentUser = JSON.parse(savedUser);
-      showDashboard();
+      const parsed = JSON.parse(savedUser);
+      document.getElementById('studentName').value = parsed.name;
+      document.getElementById('mobileInput').value = parsed.mobile;
+      document.getElementById('pinInput').value = parsed.pin;
+      loginStudent(true);
     }
   };
 
-  function loginStudent() {
+  async function loginStudent(isAuto = false) {
     const name = document.getElementById('studentName').value.trim() || "విద్యార్థి";
     const mobile = document.getElementById('mobileInput').value.trim();
     const pin = document.getElementById('pinInput').value.trim();
 
     if (!/^[6-9]\d{9}$/.test(mobile)) {
-      alert("దయచేసి సరైన 10-అంకెల మొబైల్ నంబర్ ఎంటర్ చేయండి.");
+      if (!isAuto) alert("దయచేసి సరైన 10-అంకెల మొబైల్ నంబర్ ఎంటర్ చేయండి.");
       return;
     }
     if (!/^\d{4}$/.test(pin)) {
-      alert("దయచేసి 4-అంకెల PIN ఎంటర్ చేయండి.");
+      if (!isAuto) alert("దయచేసి 4-అంకెల PIN ఎంటర్ చేయండి.");
       return;
     }
 
-    currentUser = { name, mobile, pin };
-    localStorage.setItem('tssi_mock_user', JSON.stringify(currentUser));
-    showDashboard();
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.innerText = "లోడ్ అవుతోంది...";
+
+    try {
+      const res = await fetch(`${API_BASE}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, mobile, pin, test_id: TEST_ID })
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert(data.error || "లాగిన్ విఫలమైంది.");
+        localStorage.removeItem('tssi_d1_user');
+        btn.disabled = false;
+        btn.innerText = "లాగిన్ / పరీక్ష పోర్టల్‌లోకి వెళ్ళండి →";
+        return;
+      }
+
+      currentUser = { name: data.student.name, mobile: data.student.mobile, pin };
+      localStorage.setItem('tssi_d1_user', JSON.stringify(currentUser));
+      userState = {
+        hasAccess: data.hasAccess,
+        allowReattempt: data.allowReattempt,
+        attempts: data.attempts || []
+      };
+      showDashboard();
+    } catch (err) {
+      alert("నెట్‌వర్క్ సమస్య. దయచేసి మళ్లీ ప్రయత్నించండి.");
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "లాగిన్ / పరీక్ష పోర్టల్‌లోకి వెళ్ళండి →";
+    }
   }
 
   function logout() {
-    localStorage.removeItem('tssi_mock_user');
+    localStorage.removeItem('tssi_d1_user');
     location.reload();
-  }
-
-  function toggleReattempt(status) {
-    allowReattempt = status;
-    renderDashboardState();
   }
 
   function showDashboard() {
@@ -339,27 +400,32 @@
   }
 
   function renderDashboardState() {
-    const attemptsKey = `tssi_attempts_${currentUser.mobile}`;
-    const attempts = JSON.parse(localStorage.getItem(attemptsKey) || "[]");
-    const badge = document.getElementById('reattemptStatusBadge');
+    const badge = document.getElementById('accessStatusBadge');
     const actionArea = document.getElementById('actionButtonsArea');
+    const attempts = userState.attempts;
 
-    if (allowReattempt) {
-      badge.className = "badge badge-green";
-      badge.innerText = "Re-attempt: అనుమతి ఉంది";
-    } else {
+    if (!userState.hasAccess) {
       badge.className = "badge badge-red";
-      badge.innerText = "Re-attempt: నిలిపివేయబడింది";
-    }
-
-    if (attempts.length === 0) {
+      badge.innerText = "🔒 Locked (₹5)";
+      actionArea.innerHTML = `
+        <button class="btn btn-pay" onclick="payWithRazorpay()">💳 ₹${TEST_PRICE_INR} చెల్లించి పరీక్ష అన్‌లాక్ చేయండి (Unlock Full Test)</button>
+        <p style="font-size:0.78rem; color:var(--muted); text-align:center; margin-top:6px;">
+          UPI / PhonePe / GPay / Paytm ద్వారా సురక్షిత చెల్లింపు
+        </p>`;
+    } else if (attempts.length === 0) {
+      badge.className = "badge badge-green";
+      badge.innerText = "✅ Unlocked";
       actionArea.innerHTML = `<button class="btn btn-accent" onclick="startExam()">✍️ పూర్తి పరీక్ష ప్రారంభించండి (Start ${questions.length}Q Test)</button>`;
-    } else if (allowReattempt) {
+    } else if (userState.allowReattempt) {
+      badge.className = "badge badge-green";
+      badge.innerText = "✅ Re-attempt అనుమతి ఉంది";
       actionArea.innerHTML = `<button class="btn btn-primary" onclick="startExam()">🔄 మళ్ళీ పరీక్ష రాయండి (Re-attempt Test)</button>`;
     } else {
+      badge.className = "badge badge-blue";
+      badge.innerText = "✔ పరీక్ష పూర్తయింది";
       actionArea.innerHTML = `
-        <div style="background:#fee2e2; color:#991b1b; padding:12px; border-radius:8px; font-size:0.9rem; font-weight:600; text-align:center;">
-          🔒 మీరు ఇప్పటికే ఈ పరీక్ష రాశారు. అడ్మిన్ అనుమతి ఇస్తేనే మళ్ళీ రాయగలరు.
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; padding:12px; border-radius:8px; font-size:0.9rem; font-weight:600; text-align:center;">
+          ✅ మీరు ఈ పరీక్షను విజయవంతంగా పూర్తి చేశారు. కింద ఉన్న బటన్ ద్వారా మీ పూర్తి 200 ప్రశ్నల పేపర్ & కీ PDF డౌన్‌లోడ్ చేసుకోవచ్చు.
         </div>`;
     }
 
@@ -371,7 +437,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; gap:8px;">
           <div>
             <strong>Attempt #${idx + 1}</strong> - స్కోర్: <span style="color:var(--accent); font-weight:800;">${att.score} / ${questions.length}</span><br>
-            <span style="font-size:0.78rem; color:var(--muted);">${att.date}</span>
+            <span style="font-size:0.78rem; color:var(--muted);">${att.submitted_at || ''}</span>
           </div>
           <button class="btn btn-outline btn-sm" onclick="viewSavedAttempt(${idx})">📄 పేపర్ / PDF</button>
         </div>
@@ -379,6 +445,45 @@
     } else {
       historySec.classList.add('hidden');
     }
+  }
+
+  function payWithRazorpay() {
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: TEST_PRICE_INR * 100, // in paise
+      currency: "INR",
+      name: "FillAndPrint Mock Tests",
+      description: "TS SI Mains 2023 GS Full Grand Test (200Q)",
+      prefill: {
+        name: currentUser.name,
+        contact: currentUser.mobile
+      },
+      theme: { color: "#0284c7" },
+      handler: async function (response) {
+        try {
+          const res = await fetch(`${API_BASE}/api/unlock-test`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              mobile: currentUser.mobile,
+              test_id: TEST_ID,
+              payment_id: response.razorpay_payment_id,
+              amount: TEST_PRICE_INR
+            })
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert("🎉 చెల్లింపు విజయవంతమైంది! మీ పరీక్ష అన్‌లాక్ అయింది.");
+            userState.hasAccess = true;
+            renderDashboardState();
+          }
+        } catch (e) {
+          alert("చెల్లింపు పూర్తయింది కానీ అప్‌డేట్ అవ్వడంలో ఆలస్యం జరిగింది. దయచేసి పేజీ రీఫ్రెష్ చేయండి.");
+        }
+      }
+    };
+    const rzp = new Razorpay(options);
+    rzp.open();
   }
 
   function startExam() {
@@ -511,7 +616,7 @@
     }
   }
 
-  function finalizeExam() {
+  async function finalizeExam() {
     let correct = 0, wrong = 0, skipped = 0;
     questions.forEach((q, idx) => {
       if (userAnswers[idx] === null) skipped++;
@@ -525,23 +630,36 @@
       correct,
       wrong,
       skipped,
-      answers: [...userAnswers],
-      date: now
+      answers_json: JSON.stringify(userAnswers),
+      submitted_at: now
     };
 
-    const attemptsKey = `tssi_attempts_${currentUser.mobile}`;
-    const attempts = JSON.parse(localStorage.getItem(attemptsKey) || "[]");
-    attempts.push(attemptRecord);
-    localStorage.setItem(attemptsKey, JSON.stringify(attempts));
+    try {
+      await fetch(`${API_BASE}/api/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile: currentUser.mobile,
+          test_id: TEST_ID,
+          score: correct,
+          correct,
+          wrong,
+          skipped,
+          answers: userAnswers
+        })
+      });
+    } catch (e) {
+      console.error("D1 Submit Error:", e);
+    }
 
+    userState.attempts.push(attemptRecord);
+    userState.allowReattempt = false;
     displayResult(attemptRecord);
   }
 
   function viewSavedAttempt(index) {
-    const attemptsKey = `tssi_attempts_${currentUser.mobile}`;
-    const attempts = JSON.parse(localStorage.getItem(attemptsKey) || "[]");
-    if (attempts[index]) {
-      displayResult(attempts[index]);
+    if (userState.attempts[index]) {
+      displayResult(userState.attempts[index]);
     }
   }
 
@@ -554,16 +672,20 @@
     document.getElementById('resWrong').innerText = record.wrong;
     document.getElementById('resSkipped').innerText = record.skipped;
     document.getElementById('resStudentInfo').innerText = `${currentUser.name} (${currentUser.mobile})`;
-    document.getElementById('resDate').innerText = record.date;
+    document.getElementById('resDate').innerText = record.submitted_at || '';
 
     filterReview('all');
   }
 
   function filterReview(mode) {
     if (!activeRecord) return;
+    const ansArray = typeof activeRecord.answers_json === 'string'
+      ? JSON.parse(activeRecord.answers_json)
+      : activeRecord.answers_json;
+
     const labels = ["1", "2", "3", "4"];
     const reviewHTML = questions.map((q, idx) => {
-      const uAns = activeRecord.answers[idx];
+      const uAns = ansArray[idx];
       const isCorrect = uAns === q.answer;
       const status = uAns === null ? 'skipped' : (isCorrect ? 'correct' : 'wrong');
 
@@ -597,8 +719,64 @@
     showDashboard();
   }
 
+  // --- ADMIN FUNCTIONS ---
+  async function loadAdminData() {
+    const adminKey = document.getElementById('adminKeyInput').value.trim();
+    if (!adminKey) return alert("Admin Key ఎంటర్ చేయండి.");
+
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/students`, {
+        headers: { "x-admin-key": adminKey }
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || "తప్పు పాస్‌వర్డ్!");
+
+      sessionStorage.setItem('tssi_admin_key', adminKey);
+      document.getElementById('adminAuthBox').classList.add('hidden');
+      document.getElementById('adminDataBox').classList.remove('hidden');
+
+      const list = data.students || [];
+      document.getElementById('totalStudentsCount').innerText = list.length;
+
+      document.getElementById('adminStudentsList').innerHTML = list.map(st => {
+        const isPaid = !!st.payment_id;
+        const canReattempt = st.allow_reattempt === 1;
+        return `
+          <div class="admin-row">
+            <div>
+              <strong>${st.name}</strong> (${st.mobile})<br>
+              <span style="font-size:0.8rem; color:var(--muted);">
+                Payment: <strong>${isPaid ? '✅ Paid (' + st.payment_id + ')' : '❌ Unpaid'}</strong> |
+                Attempts: <strong>${st.attempt_count || 0}</strong> |
+                Best Score: <strong>${st.best_score !== null ? st.best_score + '/200' : '-'}</strong>
+              </span>
+            </div>
+            ${isPaid ? `
+              <button class="btn btn-sm ${canReattempt ? 'btn-warn' : 'btn-accent'}"
+                onclick="toggleStudentReattempt('${st.mobile}', ${canReattempt ? 0 : 1})">
+                ${canReattempt ? '🔒 Lock Re-attempt' : '🔄 Allow Re-attempt'}
+              </button>
+            ` : ''}
+          </div>
+        `;
+      }).join('') || '<p>ఇంకా విద్యార్థులు ఎవరూ లాగిన్ అవ్వలేదు.</p>';
+    } catch (e) {
+      alert("Admin డేటా లోడ్ అవ్వడంలో విఫలమైంది.");
+    }
+  }
+
+  async function toggleStudentReattempt(mobile, allow) {
+    const adminKey = sessionStorage.getItem('tssi_admin_key');
+    await fetch(`${API_BASE}/api/admin/reattempt`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+      body: JSON.stringify({ mobile, test_id: TEST_ID, allow: allow === 1 })
+    });
+    loadAdminData();
+  }
+
   function hideAllSections() {
-    ['loginSection', 'dashboardSection', 'examSection', 'resultSection'].forEach(id => {
+    ['loginSection', 'dashboardSection', 'examSection', 'resultSection', 'adminSection'].forEach(id => {
       document.getElementById(id).classList.add('hidden');
     });
   }
