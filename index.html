@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TS SI Mains 2023 - General Studies Full Grand Test (200 Questions)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --accent: #16a34a;
+      --danger: #dc2626;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Noto Sans Telugu', sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 50px; }
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white; padding: 18px 16px; text-align: center;
+      border-bottom: 4px solid var(--primary);
+    }
+    header h1 { font-size: 1.25rem; color: #38bdf8; }
+    header p { font-size: 0.85rem; color: #cbd5e1; margin-top: 4px; }
+    .container { max-width: 760px; margin: 18px auto; padding: 0 14px; }
+    .card {
+      background: var(--card); border-radius: 12px; padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08); border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .hidden { display: none !important; }
+    h2 { font-size: 1.15rem; margin-bottom: 12px; color: #0f172a; }
+    label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; color: #334155; }
+    input[type="text"], input[type="tel"], input[type="password"] {
+      width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 1rem; margin-bottom: 14px; outline: none;
+    }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(2,132,199,0.15); }
+    .btn {
+      display: inline-block; width: 100%; padding: 12px 16px; border: none; border-radius: 8px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; text-align: center; transition: 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-accent { background: var(--accent); color: white; }
+    .btn-outline { background: white; border: 2px solid var(--primary); color: var(--primary); }
+    .btn-warn { background: #f59e0b; color: white; }
+    .btn-sm { padding: 8px 12px; font-size: 0.85rem; width: auto; }
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
+    }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-blue { background: #e0f2fe; color: #075985; }
+
+    .user-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #e0f2fe; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px;
+      font-size: 0.9rem; font-weight: 600; color: #0369a1;
+    }
+
+    .exam-header {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #0f172a; color: white; padding: 12px 16px; border-radius: 10px;
+      margin-bottom: 12px; position: sticky; top: 8px; z-index: 20;
+    }
+    .timer { font-size: 1.15rem; font-weight: 800; color: #facc15; }
+    .sec-tabs {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px;
+    }
+    .sec-tab {
+      padding: 8px 4px; text-align: center; border-radius: 8px; border: 1px solid #cbd5e1;
+      background: white; font-size: 0.82rem; font-weight: 700; cursor: pointer; color: #334155;
+    }
+    .sec-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .q-palette {
+      display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-bottom: 16px;
+      max-height: 185px; overflow-y: auto; padding: 4px; border: 1px solid var(--border); border-radius: 8px;
+    }
+    .q-dot {
+      height: 30px; border-radius: 6px; border: 1px solid #cbd5e1;
+      display: flex; align-items: center; justify-content: center; font-weight: 700;
+      font-size: 0.78rem; cursor: pointer; background: white;
+    }
+    .q-dot.active { border: 2px solid var(--primary); background: #e0f2fe; color: #0369a1; }
+    .q-dot.answered { background: var(--accent); color: white; border-color: var(--accent); }
+    .q-dot.marked { background: #f59e0b; color: white; border-color: #d97706; }
+
+    .q-box-text {
+      font-size: 1.02rem; font-weight: 600; line-height: 1.6; margin-bottom: 16px;
+      white-space: pre-line; color: #0f172a;
+    }
+    .option-item {
+      display: block; padding: 12px 14px; border: 1.5px solid var(--border);
+      border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.15s;
+      font-size: 0.96rem;
+    }
+    .option-item:hover { background: #f8fafc; }
+    .option-item.selected { border-color: var(--primary); background: #e0f2fe; font-weight: 600; }
+    .nav-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 16px; }
+
+    .score-box {
+      text-align: center; padding: 20px; background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border-radius: 12px; border: 1px solid #a7f3d0; margin-bottom: 18px;
+    }
+    .score-big { font-size: 2.2rem; font-weight: 800; color: #065f46; }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px;
+    }
+    .stat-cell { background: white; padding: 10px 6px; border-radius: 8px; font-size: 0.85rem; }
+    .review-q { border-bottom: 1px solid var(--border); padding: 14px 0; }
+    .review-q:last-child { border-bottom: none; }
+    .admin-control {
+      background: #fffbeb; border: 1px dashed #f59e0b; padding: 12px; border-radius: 8px;
+      margin-top: 16px; font-size: 0.85rem;
+    }
+    .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+
+    @media (max-width: 480px) {
+      .q-palette { grid-template-columns: repeat(8, 1fr); }
+      .nav-btns { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      header, .no-print, .admin-control, .user-bar, .filter-bar { display: none !important; }
+      .container { max-width: 100%; margin: 0; padding: 0; }
+      .card { box-shadow: none; border: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🎯 TS SI Mains 2023 - General Studies Grand Test</h1>
+  <p>మొత్తం 200 ప్రశ్నలు • సమయం: 3 గంటలు (180 నిమిషాలు) • PDF రెస్పాన్స్ షీట్ & కీ</p>
+</header>
+
+<div class="container">
+
+  <!-- 1. LOGIN SCREEN -->
+  <div id="loginSection" class="card">
+    <h2>📱 విద్యార్థి లాగిన్ (Student Login)</h2>
+    <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 14px;">
+      పరీక్ష రాయడానికి మీ పేరు, 10-అంకెల మొబైల్ నంబర్ మరియు 4-అంకెల PIN ఎంటర్ చేయండి.
+    </p>
+    <label>విద్యార్థి పేరు (Student Name)</label>
+    <input type="text" id="studentName" placeholder="మీ పూర్తి పేరు">
+
+    <label>మొబైల్ నంబర్ (10 అంకెలు)</label>
+    <input type="tel" id="mobileInput" maxlength="10" placeholder="ఉదా: 9876543210">
+
+    <label>4-అంకెల PIN (సెట్ చేసుకోండి / ఎంటర్ చేయండి)</label>
+    <input type="password" id="pinInput" maxlength="4" placeholder="ఉదా: 1234">
+
+    <button class="btn btn-primary" onclick="loginStudent()">లాగిన్ / పరీక్ష పోర్టల్‌లోకి వెళ్ళండి →</button>
+  </div>
+
+  <!-- 2. DASHBOARD SCREEN -->
+  <div id="dashboardSection" class="hidden">
+    <div class="user-bar">
+      <span>👤 <span id="displayUserName"></span> (<span id="displayUserMobile"></span>)</span>
+      <button class="btn btn-outline btn-sm" onclick="logout()">లాగౌట్</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+        <span class="badge badge-blue">PAPER CODE A (09-04-2023)</span>
+        <span id="reattemptStatusBadge" class="badge badge-green">Re-attempt: అనుమతి ఉంది</span>
+      </div>
+      <h2>TSLPRB SI / ASI ఫైనల్ రాత పరీక్ష - జనరల్ స్టడీస్ (200 మార్కులు)</h2>
+      <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 14px;">
+        • మొత్తం ప్రశ్నలు: <strong>200</strong> (తెలుగు & ఇంగ్లీష్ మీడియం)<br>
+        • పరీక్ష సమయం: <strong>180 నిమిషాలు (3 గంటలు)</strong><br>
+        • మార్కులు: ప్రతి సరైన సమాధానానికి 1 మార్కు (నెగటివ్ మార్కులు లేవు)
+      </p>
+
+      <div id="actionButtonsArea">
+        <button class="btn btn-accent" onclick="startExam()">✍️ పూర్తి పరీక్ష ప్రారంభించండి (Start 200Q Test)</button>
+      </div>
+
+      <div id="historySection" class="hidden" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <h3 style="font-size: 1rem; margin-bottom: 10px;">📋 మీరు రాసిన పరీక్షల వివరాలు (Attempt History)</h3>
+        <div id="historyList"></div>
+      </div>
+
+      <div class="admin-control hidden">
+        <strong>⚙️ అడ్మిన్ కంట్రోల్ (Re-attempt Permission):</strong><br>
+        విద్యార్థికి మళ్ళీ పరీక్ష రాసే అనుమతి ఇవ్వాలా వద్దా ఇక్కడ మార్చవచ్చు:
+        <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-sm btn-accent" onclick="toggleReattempt(true)">✅ Re-attempt అనుమతించు</button>
+          <button class="btn btn-sm" style="background:#dc2626; color:white;" onclick="toggleReattempt(false)">🔒 Re-attempt ఆపివేయి</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. EXAM SCREEN -->
+  <div id="examSection" class="hidden">
+    <div class="exam-header">
+      <div>ప్రశ్న <strong><span id="qCurrentNum">1</span></strong> / <span id="qTotalNum">200</span></div>
+      <div class="timer">⏱️ <span id="timerDisplay">03:00:00</span></div>
+      <button class="btn btn-sm" style="background:#ef4444; color:white;" onclick="submitExam()">సబ్మిట్</button>
+    </div>
+
+    <div class="card">
+      <div class="sec-tabs">
+        <div class="sec-tab active" id="tab0" onclick="switchSection(0)">Q 1 - 50</div>
+        <div class="sec-tab" id="tab1" onclick="switchSection(1)">Q 51 - 100</div>
+        <div class="sec-tab" id="tab2" onclick="switchSection(2)">Q 101 - 150</div>
+        <div class="sec-tab" id="tab3" onclick="switchSection(3)">Q 151 - 200</div>
+      </div>
+
+      <div class="q-palette" id="questionPalette"></div>
+      <div style="font-size:0.78rem; color:var(--muted); margin-bottom:12px;">
+        🟩 ఆన్సర్ చేసినవి &nbsp;|&nbsp; 🟧 రివ్యూ కోసం మార్క్ చేసినవి &nbsp;|&nbsp; ⬜ చూడనివి
+      </div>
+
+      <div class="q-box-text" id="questionText"></div>
+      <div id="optionsContainer"></div>
+
+      <div class="nav-btns">
+        <button class="btn btn-outline btn-sm" id="prevBtn" onclick="prevQuestion()">← వెనుకకు</button>
+        <button class="btn btn-warn btn-sm" onclick="toggleMarkReview()">🚩 మార్క్ / క్లియర్</button>
+        <button class="btn btn-primary btn-sm" id="nextBtn" onclick="nextQuestion()">తర్వాతి ప్రశ్న →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. RESULT & PDF RESPONSE SHEET SCREEN -->
+  <div id="resultSection" class="hidden">
+    <div class="card">
+      <div class="score-box">
+        <div style="font-size: 0.9rem; font-weight: 700; color: #047857;">TS SI Mains 2023 - పరీక్ష ఫలితం</div>
+        <div class="score-big"><span id="resScore">0</span> / <span id="resTotal">200</span></div>
+        <div style="font-size: 0.85rem; color: #065f46; margin-top: 4px;">
+          విద్యార్థి: <strong id="resStudentInfo"></strong> | తేదీ: <span id="resDate"></span>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-cell" style="color:#16a34a;">✅ సరైనవి: <strong id="resCorrect">0</strong></div>
+          <div class="stat-cell" style="color:#dc2626;">❌ తప్పులు: <strong id="resWrong">0</strong></div>
+          <div class="stat-cell" style="color:#64748b;">⚪ వదిలేసినవి: <strong id="resSkipped">0</strong></div>
+        </div>
+      </div>
+
+      <div class="no-print" style="display: flex; gap: 10px; margin-bottom: 16px;">
+        <button class="btn btn-primary" onclick="printFullSheet()">📄 పూర్తి పేపర్ & కీ PDF డౌన్‌లోడ్</button>
+        <button class="btn btn-outline" onclick="backToDashboard()">🏠 డ్యాష్‌బోర్డ్</button>
+      </div>
+
+      <div class="filter-bar no-print">
+        <button class="btn btn-outline btn-sm" onclick="filterReview('all')">అన్నీ</button>
+        <button class="btn btn-outline btn-sm" style="border-color:#16a34a; color:#16a34a;" onclick="filterReview('correct')">✅ సరైనవి</button>
+        <button class="btn btn-outline btn-sm" style="border-color:#dc2626; color:#dc2626;" onclick="filterReview('wrong')">❌ తప్పులు</button>
+        <button class="btn btn-outline btn-sm" style="border-color:#64748b; color:#64748b;" onclick="filterReview('skipped')">⚪ వదిలేసినవి</button>
+      </div>
+
+      <h3 style="font-size: 1.05rem; margin-bottom: 10px; border-bottom: 2px solid var(--primary); padding-bottom: 6px;">
+        📝 సమాధాన పత్రం (Response Sheet & Official Key)
+      </h3>
+      <div id="reviewContainer"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Load Question Parts -->
+<script src="part1.js"></script>
+<script src="part2.js"></script>
+
+<script>
+  const questions = [...(window.questionsPart1 || []), ...(window.questionsPart2 || [])];
+
+  let currentUser = null;
+  let allowReattempt = true;
+  let currentQIndex = 0;
+  let currentSection = 0;
+  let userAnswers = [];
+  let markedReview = [];
+  let timerInterval = null;
+  let timeLeft = 10800;
+  let activeRecord = null;
+
+  window.onload = () => {
+    if (questions.length === 0) {
+      alert("గమనిక: part1.js మరియు part2.js ఫైల్స్ లోడ్ కాలేదు. దయచేసి అవి index.html ఉన్న ఫోల్డర్‌లోనే ఉన్నాయో లేదో చూడండి.");
+    }
+    document.getElementById('qTotalNum').innerText = questions.length;
+    document.getElementById('resTotal').innerText = questions.length;
+
+    const savedUser = localStorage.getItem('tssi_mock_user');
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
+      showDashboard();
+    }
+  };
+
+  function loginStudent() {
+    const name = document.getElementById('studentName').value.trim() || "విద్యార్థి";
+    const mobile = document.getElementById('mobileInput').value.trim();
+    const pin = document.getElementById('pinInput').value.trim();
+
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+      alert("దయచేసి సరైన 10-అంకెల మొబైల్ నంబర్ ఎంటర్ చేయండి.");
+      return;
+    }
+    if (!/^\d{4}$/.test(pin)) {
+      alert("దయచేసి 4-అంకెల PIN ఎంటర్ చేయండి.");
+      return;
+    }
+
+    currentUser = { name, mobile, pin };
+    localStorage.setItem('tssi_mock_user', JSON.stringify(currentUser));
+    showDashboard();
+  }
+
+  function logout() {
+    localStorage.removeItem('tssi_mock_user');
+    location.reload();
+  }
+
+  function toggleReattempt(status) {
+    allowReattempt = status;
+    renderDashboardState();
+  }
+
+  function showDashboard() {
+    hideAllSections();
+    document.getElementById('dashboardSection').classList.remove('hidden');
+    document.getElementById('displayUserName').innerText = currentUser.name;
+    document.getElementById('displayUserMobile').innerText = currentUser.mobile;
+    renderDashboardState();
+  }
+
+  function renderDashboardState() {
+    const attemptsKey = `tssi_attempts_${currentUser.mobile}`;
+    const attempts = JSON.parse(localStorage.getItem(attemptsKey) || "[]");
+    const badge = document.getElementById('reattemptStatusBadge');
+    const actionArea = document.getElementById('actionButtonsArea');
+
+    if (allowReattempt) {
+      badge.className = "badge badge-green";
+      badge.innerText = "Re-attempt: అనుమతి ఉంది";
+    } else {
+      badge.className = "badge badge-red";
+      badge.innerText = "Re-attempt: నిలిపివేయబడింది";
+    }
+
+    if (attempts.length === 0) {
+      actionArea.innerHTML = `<button class="btn btn-accent" onclick="startExam()">✍️ పూర్తి పరీక్ష ప్రారంభించండి (Start ${questions.length}Q Test)</button>`;
+    } else if (allowReattempt) {
+      actionArea.innerHTML = `<button class="btn btn-primary" onclick="startExam()">🔄 మళ్ళీ పరీక్ష రాయండి (Re-attempt Test)</button>`;
+    } else {
+      actionArea.innerHTML = `
+        <div style="background:#fee2e2; color:#991b1b; padding:12px; border-radius:8px; font-size:0.9rem; font-weight:600; text-align:center;">
+          🔒 మీరు ఇప్పటికే ఈ పరీక్ష రాశారు. అడ్మిన్ అనుమతి ఇస్తేనే మళ్ళీ రాయగలరు.
+        </div>`;
+    }
+
+    const historySec = document.getElementById('historySection');
+    const historyList = document.getElementById('historyList');
+    if (attempts.length > 0) {
+      historySec.classList.remove('hidden');
+      historyList.innerHTML = attempts.map((att, idx) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; gap:8px;">
+          <div>
+            <strong>Attempt #${idx + 1}</strong> - స్కోర్: <span style="color:var(--accent); font-weight:800;">${att.score} / ${questions.length}</span><br>
+            <span style="font-size:0.78rem; color:var(--muted);">${att.date}</span>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="viewSavedAttempt(${idx})">📄 పేపర్ / PDF</button>
+        </div>
+      `).join('');
+    } else {
+      historySec.classList.add('hidden');
+    }
+  }
+
+  function startExam() {
+    currentQIndex = 0;
+    currentSection = 0;
+    userAnswers = new Array(questions.length).fill(null);
+    markedReview = new Array(questions.length).fill(false);
+    timeLeft = 10800;
+    hideAllSections();
+    document.getElementById('examSection').classList.remove('hidden');
+    updateSectionTabs();
+    renderPalette();
+    renderQuestion();
+    startTimer();
+  }
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      const hrs = String(Math.floor(timeLeft / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((timeLeft % 3600) / 60)).padStart(2, '0');
+      const secs = String(timeLeft % 60).padStart(2, '0');
+      document.getElementById('timerDisplay').innerText = `${hrs}:${mins}:${secs}`;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        alert("సమయం ముగిసింది! మీ పరీక్ష ఆటోమేటిక్‌గా సబ్మిట్ అవుతోంది.");
+        finalizeExam();
+      }
+    }, 1000);
+  }
+
+  function switchSection(secIdx) {
+    currentSection = secIdx;
+    currentQIndex = secIdx * 50;
+    if (currentQIndex >= questions.length) currentQIndex = 0;
+    updateSectionTabs();
+    renderPalette();
+    renderQuestion();
+  }
+
+  function updateSectionTabs() {
+    for (let i = 0; i < 4; i++) {
+      const tab = document.getElementById(`tab${i}`);
+      if (i === currentSection) tab.classList.add('active');
+      else tab.classList.remove('active');
+    }
+  }
+
+  function renderPalette() {
+    const palette = document.getElementById('questionPalette');
+    const start = currentSection * 50;
+    const end = Math.min(start + 50, questions.length);
+    let html = '';
+    for (let idx = start; idx < end; idx++) {
+      let cls = "q-dot";
+      if (idx === currentQIndex) cls += " active";
+      else if (markedReview[idx]) cls += " marked";
+      else if (userAnswers[idx] !== null) cls += " answered";
+      html += `<div class="${cls}" onclick="jumpToQuestion(${idx})">${idx + 1}</div>`;
+    }
+    palette.innerHTML = html;
+  }
+
+  function renderQuestion() {
+    const newSec = Math.floor(currentQIndex / 50);
+    if (newSec !== currentSection) {
+      currentSection = newSec;
+      updateSectionTabs();
+    }
+
+    const qObj = questions[currentQIndex];
+    document.getElementById('qCurrentNum').innerText = currentQIndex + 1;
+    document.getElementById('questionText').innerText = `${currentQIndex + 1}. ${qObj.q}`;
+
+    const optContainer = document.getElementById('optionsContainer');
+    const labels = ["1", "2", "3", "4"];
+    optContainer.innerHTML = qObj.options.map((opt, idx) => {
+      const isSelected = userAnswers[currentQIndex] === idx ? "selected" : "";
+      return `<div class="option-item ${isSelected}" onclick="selectOption(${idx})">
+        <strong>(${labels[idx]})</strong> ${opt}
+      </div>`;
+    }).join('');
+
+    document.getElementById('prevBtn').disabled = currentQIndex === 0;
+    document.getElementById('nextBtn').innerText = (currentQIndex === questions.length - 1) ? "సబ్మిట్ ✓" : "తర్వాతిది →";
+    renderPalette();
+  }
+
+  function selectOption(optIdx) {
+    if (userAnswers[currentQIndex] === optIdx) {
+      userAnswers[currentQIndex] = null;
+    } else {
+      userAnswers[currentQIndex] = optIdx;
+    }
+    renderQuestion();
+  }
+
+  function toggleMarkReview() {
+    markedReview[currentQIndex] = !markedReview[currentQIndex];
+    renderPalette();
+  }
+
+  function prevQuestion() {
+    if (currentQIndex > 0) {
+      currentQIndex--;
+      renderQuestion();
+    }
+  }
+
+  function nextQuestion() {
+    if (currentQIndex < questions.length - 1) {
+      currentQIndex++;
+      renderQuestion();
+    } else {
+      submitExam();
+    }
+  }
+
+  function jumpToQuestion(idx) {
+    currentQIndex = idx;
+    renderQuestion();
+  }
+
+  function submitExam() {
+    const answeredCount = userAnswers.filter(a => a !== null).length;
+    if (confirm(`మీరు ${questions.length} ప్రశ్నలలో ${answeredCount} ప్రశ్నలకు సమాధానం ఇచ్చారు. పరీక్షను సబ్మిట్ చేయాలనుకుంటున్నారా?`)) {
+      clearInterval(timerInterval);
+      finalizeExam();
+    }
+  }
+
+  function finalizeExam() {
+    let correct = 0, wrong = 0, skipped = 0;
+    questions.forEach((q, idx) => {
+      if (userAnswers[idx] === null) skipped++;
+      else if (userAnswers[idx] === q.answer) correct++;
+      else wrong++;
+    });
+
+    const now = new Date().toLocaleString('te-IN', { dateStyle: 'medium', timeStyle: 'short' });
+    const attemptRecord = {
+      score: correct,
+      correct,
+      wrong,
+      skipped,
+      answers: [...userAnswers],
+      date: now
+    };
+
+    const attemptsKey = `tssi_attempts_${currentUser.mobile}`;
+    const attempts = JSON.parse(localStorage.getItem(attemptsKey) || "[]");
+    attempts.push(attemptRecord);
+    localStorage.setItem(attemptsKey, JSON.stringify(attempts));
+
+    displayResult(attemptRecord);
+  }
+
+  function viewSavedAttempt(index) {
+    const attemptsKey = `tssi_attempts_${currentUser.mobile}`;
+    const attempts = JSON.parse(localStorage.getItem(attemptsKey) || "[]");
+    if (attempts[index]) {
+      displayResult(attempts[index]);
+    }
+  }
+
+  function displayResult(record) {
+    activeRecord = record;
+    hideAllSections();
+    document.getElementById('resultSection').classList.remove('hidden');
+    document.getElementById('resScore').innerText = record.score;
+    document.getElementById('resCorrect').innerText = record.correct;
+    document.getElementById('resWrong').innerText = record.wrong;
+    document.getElementById('resSkipped').innerText = record.skipped;
+    document.getElementById('resStudentInfo').innerText = `${currentUser.name} (${currentUser.mobile})`;
+    document.getElementById('resDate').innerText = record.date;
+
+    filterReview('all');
+  }
+
+  function filterReview(mode) {
+    if (!activeRecord) return;
+    const labels = ["1", "2", "3", "4"];
+    const reviewHTML = questions.map((q, idx) => {
+      const uAns = activeRecord.answers[idx];
+      const isCorrect = uAns === q.answer;
+      const status = uAns === null ? 'skipped' : (isCorrect ? 'correct' : 'wrong');
+
+      if (mode !== 'all' && mode !== status) return '';
+
+      let statusTag = uAns === null
+        ? `<span style="color:#64748b; font-weight:700;">⚪ వదిలేశారు</span>`
+        : (isCorrect ? `<span style="color:#16a34a; font-weight:700;">✅ సరైనది</span>` : `<span style="color:#dc2626; font-weight:700;">❌ తప్పు</span>`);
+
+      const userChoiceText = uAns === null ? "సమాధానం ఇవ్వలేదు" : `(${labels[uAns]}) ${q.options[uAns]}`;
+      const correctChoiceText = `(${labels[q.answer]}) ${q.options[q.answer]}`;
+
+      return `
+        <div class="review-q">
+          <div style="font-weight:700; margin-bottom:6px; white-space:pre-line;">ప్రశ్న ${idx + 1}: ${q.q} ${statusTag}</div>
+          <div style="font-size:0.9rem;">• మీ సమాధానం: <strong>${userChoiceText}</strong></div>
+          <div style="font-size:0.9rem; color:#16a34a;">• సరైన సమాధానం: <strong>${correctChoiceText}</strong></div>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('reviewContainer').innerHTML = reviewHTML || '<p style="color:var(--muted);">ఈ విభాగంలో ప్రశ్నలు లేవు.</p>';
+  }
+
+  function printFullSheet() {
+    filterReview('all');
+    setTimeout(() => window.print(), 200);
+  }
+
+  function backToDashboard() {
+    showDashboard();
+  }
+
+  function hideAllSections() {
+    ['loginSection', 'dashboardSection', 'examSection', 'resultSection'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+  }
+</script>
+
+</body>
+</html>
